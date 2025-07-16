@@ -1,128 +1,19 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <meta charset="utf-8">
-    <title>WebVR-JapanTown</title>
-    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
-	<script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
-	
-	
-	
-    <script>
-        AFRAME.registerComponent('hotspots', {
-            init: function () {
-                this.el.addEventListener('reloadspots', function (evt) {
-                    //現在のスポットの親のentityの大きさを0にして、見えなくする
-                    var currspotgroup = document.getElementById(evt.detail.currspots);
-                    currspotgroup.setAttribute("scale", "0 0 0");
+    <title>360 Image Test</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <a-assets>
+        <img id="test360" src="images/Z.2.jpg">
+      </a-assets>
 
-                    //移行先のスポットの親のentityの大きさを1にして見えるようにする
-                    var newspotgroup = document.getElementById(evt.detail.newspots);
-                    newspotgroup.setAttribute("scale", "1 1 1");
-                });
-            }
-        });
+      <a-sky src="#test360" rotation="0 -90 0"></a-sky>
 
-        AFRAME.registerComponent('spot', { //spot属性
-            schema: { //スキーマ：プロパティを記述。htmlに書いてある奴がそのままはいる
-                linkto: {
-                    type: "string",
-                    default: ""
-                }, //文字列型で記述し、デフォルトは空文字
-                spotgroup: {
-                    type: "string",
-                    default: ""
-                } //
-            },
-            init: function () {
-                var data = this.data;
-                this.el.addEventListener('click', function () { //スポットがクリックされたなら(焦点)
-                    //スカイボックスの変更
-                    var sky = document.getElementById("skybox");
-                    sky.setAttribute("src", data.linkto);
-                    var spotcomp = document.getElementById("spots");
-                    var currspots = this.parentElement.getAttribute("id");
-                    //reloadspotsに対してイベントを投げる newspotsに対してnewspot:data, currsportsについてcurrsprots
-                    spotcomp.emit('reloadspots', {
-                        newspots: data.spotgroup,
-                        currspots: currspots
-                    });
-                });
-
-            }
-        });
-    </script>
-</head>
-
-<body>
-		
-    <a-scene background="color: #ECECEC">
-        <!-- skyboxと移動用sphereの画像 -->
-        <a-assets>
-            <img id="central" src="Z.2.jpg" />
-            <img id="north" src="Z2.3.jpg" />
-            <img id="northwest" src="Z3.3.jpg" />
-            <img id="cafe" src="../Test-1/img/cafe.png" />
-			<img id="img_play" src="A-1.png"/>
-			<img id="merchandise" src="1dccd5cc9a4e97ad0e8cdd7fed4d2a80.jpeg"/>
-		
-   </a-assets>
-
-        <!-- 他のスカイボックスへのリンクスポット群 -->
-        <!-- ある地点が持つスカイボックスから行ける場所、そのスポットの地点 -->
-        <a-entity id="spots" hotspots>
-            <a-entity id="group-central">
-                <!-- sphereとtextでセット、テキストが場所名 -->
-                <a-sphere 
-						  spot="linkto:#north;spotgroup:group-north" 
-						  src="#north" 
-						  position="15.09908 -2 0.14527"  
-						  geometry="primitive:triangle" 
-						  material="src:" 
-						  rotation="-66.02249969071988 -91.21144323805626 1.1069544601927506" 
-						  animation__scale="scale: 4 4 4" 
-						  animation__scale_reverse="scale: 2 2 2"> 
-					
-					
-				</a-sphere>
-				
-
-                <a-text  value="" width="6" position="-11 2.4 -2.3" scale="3 3 3" rotation="0 65 0"></a-text>
-                <a-sphere spot="linkto:#cafe;spotgroup:group-cafe" src="#cafe" position="-10.61137 -2 -0.05249" scale="2 2 2" rotation="-36.05508813199244 79.3489250476677 4.253638671051232" material="src:" geometry="primitive:triangle"></a-sphere>
-                <a-text value="" width="6" position="6.0 2.4 6.4"  event-set__mouseenter="scale: 4 4 4" event-set__mouseleave="scale: 2 2 2" rotation="0 -154 0"></a-text>
-				
-				
-				
-				<!---a-image id="my_btn01" src="#img_play" position="0 1.2 -3" scale="5.26 1.56 0.3" material="" geometry="" rotation=""></a-image--->
-				
-			
-			
-                    <a-text value="" width="6" position="16 2.9 0.4" scale="2 2 2" rotation="0 -90 0"></a-text>
-            </a-entity>
-            <a-entity id="group-cafe" scale="0 0 0">
-                <a-sphere spot="linkto:#central;spotgroup:group-central" src="#central" position="-7.8 0.5 -10"></a-sphere>
-                <a-text value="" width="6" position="-7.8 2.0 -8.7" scale="2 2 2" rotation="0 65 0"></a-text>
-            </a-entity>
-        </a-entity>
-
-        <!-- 初期値central -->
-        <a-sky id="skybox" src="#central"></a-sky>
-
-        <!-- カーソル (焦点時アニメーション付き)-->
-        <a-entity camera look-controls position="0 1.6 0">
-            <a-entity cursor="fuse: true;"
-                position="0 0 -1"
-                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                material="color:#fe9d4d; shader: flat">
-                <!-- 焦点時アニメーション -->
-                <a-animation begin="cursor-fusing" easing="ease-in" attribute="scale" dur="1500"
-                    fill="backwards" from="1 1 1" to="0.1 0.1 0.1"></a-animation>
-            </a-entity>
-         </a-entity>
-	
-		
-		
+      <a-camera wasd-controls-enabled="true" look-controls-enabled="true"></a-camera>
     </a-scene>
-</body>
-
+  </body>
 </html>
